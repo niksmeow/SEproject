@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '@/lib/supabase'
 import api from '@/lib/api'
 import ResumeUpload from '@/components/resume/ResumeUpload'
 import ResumeCard from '@/components/resume/ResumeCard'
@@ -24,16 +23,8 @@ export default function ResumeManagement() {
   const [showUpload, setShowUpload] = useState(false)
 
   useEffect(() => {
-    checkUser()
     loadResumes()
   }, [])
-
-  const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      navigate('/login')
-    }
-  }
 
   const loadResumes = async () => {
     try {
@@ -52,7 +43,7 @@ export default function ResumeManagement() {
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    // Demo mode - just redirect
     navigate('/login')
   }
 

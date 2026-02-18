@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -9,67 +8,27 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
-  const supabase = createClient()
-
-  // Debug: Check if Supabase is configured
-  useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      console.error('Supabase environment variables are missing!')
-      setError('Configuration error: Supabase credentials not found')
-    }
-  }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError(null)
 
-    try {
-      console.log('Attempting login...')
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (error) {
-        console.error('Login error:', error)
-        throw error
-      }
-
-      console.log('Login successful, redirecting...')
-      // Wait a moment for session to be set
-      await new Promise(resolve => setTimeout(resolve, 200))
-      
-      // Use window.location for more reliable redirect
-      window.location.href = '/dashboard'
-    } catch (error: any) {
-      console.error('Login failed:', error)
-      setError(error.message || 'Failed to sign in. Please check your credentials.')
-    } finally {
-      setLoading(false)
-    }
+    // Simulate login delay
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    // Auto-redirect to dashboard (demo mode)
+    router.push('/dashboard')
   }
 
   const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
-    })
-    if (error) setError(error.message)
+    // Auto-redirect to dashboard (demo mode)
+    router.push('/dashboard')
   }
 
   const handleGitHubLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
-    })
-    if (error) setError(error.message)
+    // Auto-redirect to dashboard (demo mode)
+    router.push('/dashboard')
   }
 
   return (
@@ -85,11 +44,6 @@ export default function LoginPage() {
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">

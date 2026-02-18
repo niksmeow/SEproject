@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 import JobColumns from '@/components/dashboard/JobColumns'
@@ -18,28 +17,16 @@ interface Job {
 }
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null)
   const [jobs, setJobs] = useState<Job[]>([])
   const [resumes, setResumes] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showUpload, setShowUpload] = useState(false)
   const [showAddJob, setShowAddJob] = useState(false)
   const router = useRouter()
-  const supabase = createClient()
 
   useEffect(() => {
-    checkUser()
     loadData()
   }, [])
-
-  const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      router.push('/login')
-    } else {
-      setUser(user)
-    }
-  }
 
   const loadData = async () => {
     try {
@@ -88,7 +75,7 @@ export default function DashboardPage() {
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    // Demo mode - just redirect
     router.push('/login')
   }
 

@@ -1,71 +1,26 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { supabase } from '@/lib/supabase'
 
 export default function VerifyEmail() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
   useEffect(() => {
-    // Check if there's a token in the URL (from email link)
-    const token = searchParams.get('token')
-    const type = searchParams.get('type')
-
-    if (token && type === 'email') {
-      handleVerifyEmail(token)
-    }
-  }, [searchParams])
-
-  const handleVerifyEmail = async (token: string) => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        token_hash: token,
-        type: 'email',
-      })
-
-      if (error) throw error
-
-      setMessage('Email verified! Redirecting to dashboard...')
-      setTimeout(() => {
-        navigate('/dashboard')
-      }, 2000)
-    } catch (error: any) {
-      setError(error.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+    // Auto-redirect to dashboard (demo mode)
+    const timer = setTimeout(() => {
+      navigate('/dashboard')
+    }, 2000)
+    return () => clearTimeout(timer)
+  }, [navigate])
 
   const handleResendEmail = async () => {
     setLoading(true)
-    setError(null)
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        setError('Please sign up first')
-        return
-      }
-
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: user.email!,
-      })
-
-      if (error) throw error
-
-      setMessage('Verification email sent! Check your inbox.')
-    } catch (error: any) {
-      setError(error.message)
-    } finally {
-      setLoading(false)
-    }
+    // Simulate sending email
+    await new Promise(resolve => setTimeout(resolve, 500))
+    setMessage('Verification email sent! (Demo mode)')
+    setLoading(false)
   }
 
   return (
@@ -77,12 +32,6 @@ export default function VerifyEmail() {
             We sent a verification link to your email address
           </p>
         </div>
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-            {error}
-          </div>
-        )}
 
         {message && (
           <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">

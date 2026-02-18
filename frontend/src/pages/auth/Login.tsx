@@ -1,67 +1,31 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { supabase } from '@/lib/supabase'
 import AuthRedirect from '@/components/auth/AuthRedirect'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
-
-  useEffect(() => {
-    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
-      console.error('Supabase environment variables are missing!')
-      setError('Configuration error: Supabase credentials not found')
-    }
-  }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError(null)
 
-    try {
-      console.log('Attempting login...')
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (error) {
-        console.error('Login error:', error)
-        throw error
-      }
-
-      console.log('Login successful, redirecting...')
-      navigate('/dashboard')
-    } catch (error: any) {
-      console.error('Login failed:', error)
-      setError(error.message || 'Failed to sign in. Please check your credentials.')
-    } finally {
-      setLoading(false)
-    }
+    // Simulate login delay
+    await new Promise(resolve => setTimeout(resolve, 500))
+    // Auto-redirect to dashboard (demo mode)
+    navigate('/dashboard')
   }
 
   const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
-    })
-    if (error) setError(error.message)
+    // Auto-redirect to dashboard (demo mode)
+    navigate('/dashboard')
   }
 
   const handleGitHubLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
-    })
-    if (error) setError(error.message)
+    // Auto-redirect to dashboard (demo mode)
+    navigate('/dashboard')
   }
 
   return (
@@ -79,11 +43,6 @@ export default function Login() {
             </p>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                {error}
-              </div>
-            )}
             <div className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">

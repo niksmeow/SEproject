@@ -1,80 +1,149 @@
-import axios from 'axios'
-import { supabase } from './supabase'
+// Mock API client - returns mock data instead of making real API calls
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
-})
+// Mock data
+const mockResumes = [
+  {
+    id: '1',
+    filename: 'resume.pdf',
+    uploaded_at: new Date().toISOString(),
+    user_id: 'mock-user',
+  },
+]
 
-// Add auth token to requests
-api.interceptors.request.use(async (config) => {
-  const { data: { session } } = await supabase.auth.getSession()
-  
-  if (session?.access_token) {
-    config.headers.Authorization = `Bearer ${session.access_token}`
-  }
-  
-  return config
-})
+const mockJobs = [
+  {
+    id: '1',
+    title: 'Software Engineer',
+    company: 'Tech Corp',
+    location: 'San Francisco, CA',
+    url: 'https://example.com/job/1',
+    description: 'We are looking for a talented software engineer...',
+    classification: 'green' as const,
+    match_score: 85,
+  },
+  {
+    id: '2',
+    title: 'Frontend Developer',
+    company: 'Web Inc',
+    location: 'Remote',
+    url: 'https://example.com/job/2',
+    description: 'Join our team as a frontend developer...',
+    classification: 'yellow' as const,
+    match_score: 65,
+  },
+]
 
-// Add response interceptor to handle 401 errors
-api.interceptors.response.use(
-  (response) => response, // Success - pass through
-  async (error) => {
-    const originalRequest = error.config
+// Mock API client that mimics axios interface
+const api = {
+  get: async (url: string, config?: any) => {
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 300))
     
-    // Check if this is an optional endpoint that can fail silently
-    const isOptionalEndpoint = originalRequest?.url?.includes('/application-status')
+    if (url.includes('/api/resume')) {
+      if (url.includes('/api/resume/') && !url.includes('/download') && !url.includes('/generate')) {
+        // Get single resume
+        return { data: mockResumes[0] }
+      }
+      if (url.includes('/download')) {
+        // Return blob for download
+        return { data: new Blob(['mock pdf content'], { type: 'application/pdf' }) }
+      }
+      return { data: mockResumes }
+    }
     
-    // If 401 and we haven't already retried
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true
-      
-      try {
-        // Get current session first
-        const { data: { session: currentSession } } = await supabase.auth.getSession()
-        
-        if (!currentSession) {
-          // For optional endpoints, fail silently instead of redirecting
-          if (isOptionalEndpoint) {
-            return Promise.reject(error) // Let the caller handle it
-          }
-          // No session - redirect to login
-          window.location.href = '/login'
-          return Promise.reject(new Error('No active session'))
-        }
-        
-        // Try to refresh the session
-        const { data: { session }, error: refreshError } = await supabase.auth.refreshSession()
-        
-        if (refreshError || !session) {
-          // For optional endpoints, fail silently instead of redirecting
-          if (isOptionalEndpoint) {
-            return Promise.reject(error) // Let the caller handle it
-          }
-          // Refresh failed - redirect to login
-          window.location.href = '/login'
-          return Promise.reject(refreshError || new Error('Session expired'))
-        }
-        
-        // Update the authorization header with new token
-        originalRequest.headers.Authorization = `Bearer ${session.access_token}`
-        
-        // Retry the original request
-        return api(originalRequest)
-      } catch (refreshErr) {
-        // For optional endpoints, fail silently instead of redirecting
-        if (isOptionalEndpoint) {
-          return Promise.reject(error) // Let the caller handle it
-        }
-        // Refresh failed - redirect to login
-        window.location.href = '/login'
-        return Promise.reject(refreshErr)
+    if (url.includes('/api/jobs')) {
+      if (url.includes('/api/jobs/') && !url.includes('/application-status')) {
+        // Get single job
+        const jobId = url.split('/api/jobs/')[1]?.split('/')[0]
+        return { data: mockJobs.find(j => j.id === jobId) || mockJobs[0] }
+      }
+      return { data: mockJobs }
+    }
+    
+    if (url.includes('/api/matching')) {
+      return {
+        data: {
+          matches: mockJobs.map(job => ({
+            job_id: job.id,
+            match_score: job.match_score,
+            classification: job.classification,
+          })),
+        },
       }
     }
     
-    // For other errors, just reject
-    return Promise.reject(error)
-  }
-)
+    if (url.includes('/application-status')) {
+      return { data: { status: 'not_applied' } }
+    }
+    
+    return { data: [] }
+  },
+  
+  post: async (url: string, data?: any, config?: any) => {
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 300))
+    
+    if (url.includes('/api/resume/upload')) {
+      return { data: { id: 'new-resume-id', ...mockResumes[0] } }
+    }
+    
+    if (url.includes('/api/jobs')) {
+      if (url.includes('/discover')) {
+        return { data: mockJobs }
+      }
+      return { data: { id: 'new-job-id', ...mockJobs[0] } }
+    }
+    
+    if (url.includes('/api/matching/match')) {
+      return {
+        data: {
+          matches: (data?.job_ids || []).map((jobId: string) => ({
+            job_id: jobId,
+            match_score: Math.floor(Math.random() * 100),
+            classification: ['green', 'yellow', 'red'][Math.floor(Math.random() * 3)] as 'green' | 'yellow' | 'red',
+          })),
+        },
+      }
+    }
+    
+    if (url.includes('/api/resume/generate')) {
+      return {
+        data: {
+          content: 'Mock optimized resume content...',
+          format: data?.format || 'json',
+        },
+      }
+    }
+    
+    if (url.includes('/api/roadmap/generate')) {
+      return {
+        data: {
+          roadmap: {
+            steps: [
+              { id: '1', title: 'Learn React', completed: false },
+              { id: '2', title: 'Build Projects', completed: false },
+            ],
+          },
+        },
+      }
+    }
+    
+    if (url.includes('/api/applications')) {
+      return { data: { success: true, external_url: 'https://example.com/apply' } }
+    }
+    
+    return { data: { success: true } }
+  },
+  
+  delete: async (url: string, config?: any) => {
+    await new Promise(resolve => setTimeout(resolve, 300))
+    return { data: { success: true } }
+  },
+  
+  put: async (url: string, data?: any, config?: any) => {
+    await new Promise(resolve => setTimeout(resolve, 300))
+    return { data: { success: true } }
+  },
+}
 
 export default api

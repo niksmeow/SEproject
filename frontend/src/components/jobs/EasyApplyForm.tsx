@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import api from '@/lib/api'
-import { supabase } from '@/lib/supabase'
 
 interface EasyApplyFormProps {
   jobId: string
@@ -25,7 +24,6 @@ export default function EasyApplyForm({ jobId, jobTitle, jobCompany, onSuccess, 
 
   useEffect(() => {
     loadResumes()
-    loadUserProfile()
   }, [])
 
   const loadResumes = async () => {
@@ -37,21 +35,6 @@ export default function EasyApplyForm({ jobId, jobTitle, jobCompany, onSuccess, 
       }
     } catch (err) {
       console.error('Error loading resumes:', err)
-    }
-  }
-
-  const loadUserProfile = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        setFormData(prev => ({
-          ...prev,
-          email: user.email || '',
-          full_name: user.user_metadata?.full_name || '',
-        }))
-      }
-    } catch (err) {
-      console.error('Error loading user profile:', err)
     }
   }
 

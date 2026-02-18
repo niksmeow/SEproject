@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
@@ -15,7 +14,6 @@ export default function ResetPasswordPage() {
   const [email, setEmail] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
-  const supabase = createClient()
 
   useEffect(() => {
     // Check if there's a token in the URL (from reset link)
@@ -31,20 +29,11 @@ export default function ResetPasswordPage() {
     setLoading(true)
     setError(null)
 
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      })
-
-      if (error) throw error
-
-      setEmailSent(true)
-      setMessage('Password reset email sent! Check your inbox.')
-    } catch (error: any) {
-      setError(error.message)
-    } finally {
-      setLoading(false)
-    }
+    // Simulate sending email
+    await new Promise(resolve => setTimeout(resolve, 500))
+    setEmailSent(true)
+    setMessage('Password reset email sent! (Demo mode)')
+    setLoading(false)
   }
 
   const handleResetPassword = async (e: React.FormEvent) => {
@@ -64,22 +53,12 @@ export default function ResetPasswordPage() {
       return
     }
 
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: password,
-      })
-
-      if (error) throw error
-
-      setMessage('Password reset successfully! Redirecting to login...')
-      setTimeout(() => {
-        router.push('/login')
-      }, 2000)
-    } catch (error: any) {
-      setError(error.message)
-    } finally {
-      setLoading(false)
-    }
+    // Simulate password reset
+    await new Promise(resolve => setTimeout(resolve, 500))
+    setMessage('Password reset successfully! Redirecting to login...')
+    setTimeout(() => {
+      router.push('/login')
+    }, 2000)
   }
 
   const token = searchParams.get('token')

@@ -1,5 +1,4 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import ProtectedRoute from '@/components/auth/ProtectedRoute'
 import Home from '@/pages/Home'
 import Login from '@/pages/auth/Login'
 import SignUp from '@/pages/auth/SignUp'
@@ -34,43 +33,23 @@ const router = createBrowserRouter([
   },
   {
     path: '/dashboard',
-    element: (
-      <ProtectedRoute>
-        <Dashboard />
-      </ProtectedRoute>
-    ),
+    element: <Dashboard />,
   },
   {
     path: '/jobs/:id',
-    element: (
-      <ProtectedRoute>
-        <JobDetail />
-      </ProtectedRoute>
-    ),
+    element: <JobDetail />,
   },
   {
     path: '/resumes/compare/:jobId',
-    element: (
-      <ProtectedRoute>
-        <ResumeCompare />
-      </ProtectedRoute>
-    ),
+    element: <ResumeCompare />,
   },
   {
     path: '/resumes/view',
-    element: (
-      <ProtectedRoute>
-        <ResumeView />
-      </ProtectedRoute>
-    ),
+    element: <ResumeView />,
   },
   {
     path: '/resumes',
-    element: (
-      <ProtectedRoute>
-        <ResumeManagement />
-      </ProtectedRoute>
-    ),
+    element: <ResumeManagement />,
   },
 ])
 

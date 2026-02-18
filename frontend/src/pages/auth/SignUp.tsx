@@ -1,62 +1,31 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { supabase } from '@/lib/supabase'
 import AuthRedirect from '@/components/auth/AuthRedirect'
 
 export default function SignUp() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
   const navigate = useNavigate()
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError(null)
-    setMessage(null)
 
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/verify-email`,
-        },
-      })
-
-      if (error) throw error
-
-      setMessage('Check your email to verify your account!')
-      setTimeout(() => {
-        navigate('/verify-email')
-      }, 2000)
-    } catch (error: any) {
-      setError(error.message)
-    } finally {
-      setLoading(false)
-    }
+    // Simulate signup delay
+    await new Promise(resolve => setTimeout(resolve, 500))
+    // Auto-redirect to dashboard (demo mode)
+    navigate('/dashboard')
   }
 
   const handleGoogleSignUp = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
-    })
-    if (error) setError(error.message)
+    // Auto-redirect to dashboard (demo mode)
+    navigate('/dashboard')
   }
 
   const handleGitHubSignUp = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
-    })
-    if (error) setError(error.message)
+    // Auto-redirect to dashboard (demo mode)
+    navigate('/dashboard')
   }
 
   return (
@@ -74,16 +43,6 @@ export default function SignUp() {
             </p>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSignUp}>
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                {error}
-              </div>
-            )}
-            {message && (
-              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-                {message}
-              </div>
-            )}
             <div className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">

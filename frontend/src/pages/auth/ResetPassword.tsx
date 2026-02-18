@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { supabase } from '@/lib/supabase'
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('')
@@ -27,20 +26,11 @@ export default function ResetPassword() {
     setLoading(true)
     setError(null)
 
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      })
-
-      if (error) throw error
-
-      setEmailSent(true)
-      setMessage('Password reset email sent! Check your inbox.')
-    } catch (error: any) {
-      setError(error.message)
-    } finally {
-      setLoading(false)
-    }
+    // Simulate sending email
+    await new Promise(resolve => setTimeout(resolve, 500))
+    setEmailSent(true)
+    setMessage('Password reset email sent! (Demo mode)')
+    setLoading(false)
   }
 
   const handleResetPassword = async (e: React.FormEvent) => {
@@ -60,22 +50,12 @@ export default function ResetPassword() {
       return
     }
 
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: password,
-      })
-
-      if (error) throw error
-
-      setMessage('Password reset successfully! Redirecting to login...')
-      setTimeout(() => {
-        navigate('/login')
-      }, 2000)
-    } catch (error: any) {
-      setError(error.message)
-    } finally {
-      setLoading(false)
-    }
+    // Simulate password reset
+    await new Promise(resolve => setTimeout(resolve, 500))
+    setMessage('Password reset successfully! Redirecting to login...')
+    setTimeout(() => {
+      navigate('/login')
+    }, 2000)
   }
 
   const token = searchParams.get('token')

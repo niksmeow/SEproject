@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef, useMemo } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { supabase } from '@/lib/supabase'
 import api from '@/lib/api'
 import JobColumns from '@/components/dashboard/JobColumns'
 import ResumeUpload from '@/components/resume/ResumeUpload'
@@ -35,7 +34,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     isMountedRef.current = true
-    checkUser()
     
     // Create new AbortController for this effect
     abortControllerRef.current = new AbortController()
@@ -58,13 +56,6 @@ export default function Dashboard() {
     abortControllerRef.current = new AbortController()
     const signal = abortControllerRef.current.signal
     await loadData(signal)
-  }
-
-  const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      navigate('/login')
-    }
   }
 
   const loadData = async (signal?: AbortSignal) => {
@@ -262,7 +253,7 @@ export default function Dashboard() {
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    // Demo mode - just redirect
     navigate('/login')
   }
 
@@ -435,8 +426,8 @@ export default function Dashboard() {
             <div className="glass p-4 rounded-lg">
               <div className="text-xs uppercase tracking-wide text-gray-500 mb-2">Sponsored</div>
               <AdSlot
-                client={import.meta.env.VITE_ADSENSE_CLIENT}
-                slot={import.meta.env.VITE_ADSENSE_SLOT_DASHBOARD_1}
+                client=""
+                slot=""
                 className="w-full"
                 minHeightPx={250}
               />
@@ -444,8 +435,8 @@ export default function Dashboard() {
             <div className="glass p-4 rounded-lg">
               <div className="text-xs uppercase tracking-wide text-gray-500 mb-2">Sponsored</div>
               <AdSlot
-                client={import.meta.env.VITE_ADSENSE_CLIENT}
-                slot={import.meta.env.VITE_ADSENSE_SLOT_DASHBOARD_2}
+                client=""
+                slot=""
                 className="w-full"
                 minHeightPx={250}
               />
