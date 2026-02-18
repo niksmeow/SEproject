@@ -6,6 +6,8 @@ import JobColumns from '@/components/dashboard/JobColumns'
 import ResumeUpload from '@/components/resume/ResumeUpload'
 import AddJobForm from '@/components/jobs/AddJobForm'
 import JobSearch from '@/components/jobs/JobSearch'
+import Footer from '@/components/layout/Footer'
+import AdSlot from '@/components/ads/AdSlot'
 import { motion } from 'framer-motion'
 
 interface Job {
@@ -359,10 +361,7 @@ export default function Dashboard() {
             <JobSearch
               onSuccess={async () => {
                 setShowJobSearch(false)
-                // Reload data after search
-                abortControllerRef.current = new AbortController()
-                const signal = abortControllerRef.current.signal
-                await loadData(signal)
+                await reloadData()
               }}
               onCancel={() => setShowJobSearch(false)}
             />
@@ -388,45 +387,74 @@ export default function Dashboard() {
         )}
 
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="glass p-6 rounded-lg">
-            <div className="text-3xl font-bold text-gray-900">{jobs.length}</div>
-            <div className="text-sm text-gray-600 mt-1">Jobs</div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Main */}
+          <div className="lg:col-span-9">
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="glass p-6 rounded-lg">
+                <div className="text-3xl font-bold text-gray-900">{jobs.length}</div>
+                <div className="text-sm text-gray-600 mt-1">Jobs</div>
+              </div>
+              <div className="glass p-6 rounded-lg">
+                <div className="text-3xl font-bold text-green-600">{eligibleJobs.length}</div>
+                <div className="text-sm text-gray-600 mt-1">Eligible</div>
+              </div>
+              <div className="glass p-6 rounded-lg">
+                <div className="text-3xl font-bold text-gray-900">{resumes.length}</div>
+                <div className="text-sm text-gray-600 mt-1">Resumes</div>
+              </div>
+            </div>
+
+            {/* Empty State */}
+            {jobs.length === 0 && (
+              <div className="glass p-12 rounded-lg text-center">
+                <p className="text-gray-600 text-lg mb-4">No jobs found</p>
+                <p className="text-gray-500 mb-6">Use the "Search Jobs" button to find jobs by keyword</p>
+                <button
+                  onClick={() => setShowJobSearch(true)}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                >
+                  Search Jobs
+                </button>
+              </div>
+            )}
+
+            {/* Job Columns */}
+            {jobs.length > 0 && (
+              <JobColumns
+                eligibleJobs={eligibleJobs}
+                closeJobs={closeJobs}
+                lockedJobs={lockedJobs}
+              />
+            )}
           </div>
-          <div className="glass p-6 rounded-lg">
-            <div className="text-3xl font-bold text-green-600">{eligibleJobs.length}</div>
-            <div className="text-sm text-gray-600 mt-1">Eligible</div>
-          </div>
-          <div className="glass p-6 rounded-lg">
-            <div className="text-3xl font-bold text-gray-900">{resumes.length}</div>
-            <div className="text-sm text-gray-600 mt-1">Resumes</div>
-          </div>
+
+          {/* Sidebar (Ads placeholder - filled after AdSlot is added) */}
+          <aside className="lg:col-span-3 space-y-4">
+            <div className="glass p-4 rounded-lg">
+              <div className="text-xs uppercase tracking-wide text-gray-500 mb-2">Sponsored</div>
+              <AdSlot
+                client={import.meta.env.VITE_ADSENSE_CLIENT}
+                slot={import.meta.env.VITE_ADSENSE_SLOT_DASHBOARD_1}
+                className="w-full"
+                minHeightPx={250}
+              />
+            </div>
+            <div className="glass p-4 rounded-lg">
+              <div className="text-xs uppercase tracking-wide text-gray-500 mb-2">Sponsored</div>
+              <AdSlot
+                client={import.meta.env.VITE_ADSENSE_CLIENT}
+                slot={import.meta.env.VITE_ADSENSE_SLOT_DASHBOARD_2}
+                className="w-full"
+                minHeightPx={250}
+              />
+            </div>
+          </aside>
         </div>
-
-        {/* Empty State */}
-        {jobs.length === 0 && (
-          <div className="glass p-12 rounded-lg text-center">
-            <p className="text-gray-600 text-lg mb-4">No jobs found</p>
-            <p className="text-gray-500 mb-6">Use the "Search Jobs" button to find jobs by keyword</p>
-            <button
-              onClick={() => setShowJobSearch(true)}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            >
-              Search Jobs
-            </button>
-          </div>
-        )}
-
-        {/* Job Columns */}
-        {jobs.length > 0 && (
-          <JobColumns
-            eligibleJobs={eligibleJobs}
-            closeJobs={closeJobs}
-            lockedJobs={lockedJobs}
-          />
-        )}
       </main>
+
+      <Footer />
     </div>
   )
 }

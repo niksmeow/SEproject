@@ -19,7 +19,7 @@ export default function ResumeCompare() {
   const loadResumes = async () => {
     try {
       // Get job details to find resume and optimized resume
-      const jobRes = await api.get(`/api/jobs/${jobId}`)
+      await api.get(`/api/jobs/${jobId}`)
       
       // Get user's resumes
       const resumesRes = await api.get('/api/resume')
@@ -182,7 +182,7 @@ export default function ResumeCompare() {
 }
 
 // Component to display resume (handles both JSON and parsed data)
-function ResumeDisplay({ content, isOriginal }: { content: any; isOriginal: boolean }) {
+function ResumeDisplay({ content, isOriginal: _isOriginal }: { content: any; isOriginal: boolean }) {
   let resume: any = {}
 
   try {

@@ -109,7 +109,7 @@ export default function RoadmapGamified({ roadmapData }: RoadmapGamifiedProps) {
     }
   }
 
-  const markResourceComplete = (skillName: string, resourceIndex: number) => {
+  const markResourceComplete = (skillName: string, _resourceIndex: number) => {
     const progress = skillProgress.get(skillName)
     if (!progress) return
 

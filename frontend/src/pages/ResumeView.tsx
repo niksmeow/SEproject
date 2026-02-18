@@ -160,7 +160,7 @@ export default function ResumeView() {
 }
 
 // Component to display resume (handles both JSON and parsed data)
-function ResumeDisplay({ content, isOriginal }: { content: any; isOriginal: boolean }) {
+function ResumeDisplay({ content, isOriginal: _isOriginal }: { content: any; isOriginal: boolean }) {
   if (!content) {
     return <div className="text-center py-8 text-gray-500">No resume data available</div>
   }

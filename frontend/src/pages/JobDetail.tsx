@@ -287,7 +287,7 @@ export default function JobDetail() {
     const resumeId = match.resume_id
 
     try {
-      const response = await api.post('/api/resume/save-optimized', {
+      await api.post('/api/resume/save-optimized', {
         resume_id: resumeId,
         job_id: jobId,
         format: 'pdf'

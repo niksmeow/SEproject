@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import api from '@/lib/api'
 import ResumeUpload from '@/components/resume/ResumeUpload'
 import ResumeCard from '@/components/resume/ResumeCard'
+import Footer from '@/components/layout/Footer'
 import { motion } from 'framer-motion'
 
 interface Resume {
@@ -165,6 +166,8 @@ export default function ResumeManagement() {
           </div>
         )}
       </main>
+
+      <Footer />
     </div>
   )
 }
